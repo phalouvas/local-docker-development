@@ -1,0 +1,29 @@
+debug = false
+
+logLevel = "INFO"
+defaultEntryPoints = ["https","http"]
+
+[traefikLog]
+  filePath = "/logs/traefik.log"
+
+[web]
+address = ":8080"
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+     entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+  compress = true
+  [entryPoints.https.tls]
+
+[retry]
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "local.intergo.co"
+watch = true
+exposedByDefault = false
+swarmMode = false
