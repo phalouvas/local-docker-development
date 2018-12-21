@@ -5,7 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Install selected extensions and other stuff
 RUN apt-get update \
-    && apt-get -y --no-install-recommends install php7.1-mysql php-redis php7.1-gd php-imagick php7.1-intl php-mongodb php7.1-xsl php-yaml php-xdebug
+    && apt-get -y --no-install-recommends install php7.1-mysql php-redis php7.1-gd php-imagick php7.1-intl php-mongodb php7.1-xsl php-yaml
 
 # Packages for wkhtmltopdf
 #RUN apt-get install -y fontconfig libfontconfig1 libfreetype6 libpng12-0 libssl1.0.0 \

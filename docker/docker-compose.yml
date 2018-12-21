@@ -11,13 +11,13 @@ services:
         - /var/run/docker.sock:/var/run/docker.sock
         - ./traefik/traefik.toml:/traefik.toml
         - ./traefik/acme.json:/acme.json
+        - ./traefik/ssl/:/ssl/
         - ./logs:/logs
       container_name: traefik
       restart: always
 
     nginx:
-      build:
-          context: ./include/nginx_local
+      image: nginx:alpine
       container_name: nginx
       hostname: nginx
       volumes:
@@ -57,8 +57,11 @@ services:
           - REDIS_1_NAME=smsto.redis
           - REDIS_2_HOST=emailverifier.redis
           - REDIS_2_NAME=emailverifier.redis
-#      depends_on:
-#          - redis
+      labels:
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=Host:redis-web.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=redis-web"
+          - "traefik.port=80"
 
     mariadb:
       image: mariadb:10.2
@@ -90,22 +93,29 @@ services:
       depends_on:
           - mongo
       restart: always
+      labels:
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=Host:mongo-express.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=mongo-express"
+          - "traefik.port=8081"
 
     php-fpm:
       build:
         context: ./include/php-fpm
-      container_name: smsto-php-fpm
+      container_name: php-fpm
       hostname: php-fpm
       # xdebug idekey "PHPSTORM"
       # xdebug port 9001
       volumes:
         # TimeFix
-        - /etc/localtime:/etc/localtime:ro
+        #- /etc/localtime:/etc/localtime:ro
         # GeoIP
         - ./docker_files/db_geoip/:/application/storage/app/geoip2/
         # CRON
         - ./docker_files/cron/php-fpm_laravel_schedule:/etc/cron.d/cron
-        - .:/application/:rw
+        - ../code_smsto/:/code_smsto/:rw
+        - ../code_emailverifier/:/code_emailverifier/:rw
+        - ../code_emailvalidation/:/code_emailvalidation/:rw
 
     php-fpm-horizon:
       build:
@@ -113,7 +123,15 @@ services:
       container_name: php-fpm-horizon
       hostname: php-fpm-horizon
       volumes:
-        - .:/application/:rw
+        - ../code_smsto/:/code_smsto/:rw
+        - ../code_emailverifier/:/code_emailverifier/:rw
+        - ../code_emailvalidation/:/code_emailvalidation/:rw
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=web-gateway"
+        - "traefik.frontend.rule=Host:supervisor.${COMPOSE_BASE_DOMAIN}"
+        - "traefik.backend=horizon-supervisor"
+        - "traefik.port=8001"
 
     phpmyadmin:
       image: phpmyadmin/phpmyadmin
@@ -129,24 +147,23 @@ services:
 #        - 8080:80
       volumes:
         - /sessions
-
-
-    wsecho:
-      image: registry.intergo.co/wsecho:latest
-      #build: ./include/laravel-echo-server
-      container_name: smsto-wsecho
-      hostname: wsecho
-      restart: always
-      ports:
-        - 6001:6001
-      volumes:
-         # Config moved inside image
-         - ./docker_files/laravel-echo-server.json:/app/laravel-echo-server.json
+      labels:
+          - "traefik.enable=true"
+          - "traefik.docker.network=web-gateway"
+          - "traefik.frontend.rule=Host:phpmyadmin.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=phpmyadmin"
+          - "traefik.port=80"
 
     mailhog:
       image: mailhog/mailhog:latest
-      container_name: smsto-mailhog
+      container_name: mailhog
       restart: always
+      labels:
+          - "traefik.enable=true"
+          - "traefik.docker.network=web-gateway"
+          - "traefik.frontend.rule=Host:mailhog.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=mailhog"
+          - "traefik.port=8025"
 
 #    geoip:
 #      image: registry.intergo.co/geoip:latest
@@ -157,16 +174,16 @@ services:
 #      restart: always
 #      volumes:
 #         - ./docker_files/db_geoip/:/usr/share/GeoIP/
-
-    node-vuejs:
-      image: node:8
-      #build:
-      #  context: ./include/node-vuejs
-      container_name: node-vuejs
-      hostname: node-vuejs
-      working_dir: /app
-      volumes:
-        - .:/app
+#
+#    node-vuejs:
+#      image: node:8
+#      #build:
+#      #  context: ./include/node-vuejs
+#      container_name: node-vuejs
+#      hostname: node-vuejs
+#      working_dir: /app
+#      volumes:
+#        - .:/app
 
 networks:
   default:
