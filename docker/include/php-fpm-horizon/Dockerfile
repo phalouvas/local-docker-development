@@ -12,7 +12,7 @@ RUN apt-get update \
 #    libx11-6 libxext6 libxrender1 xfonts-75dpi xfonts-base xz-utils
 
 # Install supervisor
-RUN apt-get -y install supervisor
+RUN apt-get -y install cron supervisor
 
 # Add supervisord config file
 COPY supervisord.conf /etc/supervisord.conf
@@ -20,8 +20,13 @@ COPY supervisord.conf /etc/supervisord.conf
 # Create log directory
 RUN mkdir -p /var/log/supervisor
 
-# Configure CRON
-COPY cron /etc/cron.d/cron
+# Configure CRON and fix permissions
+COPY cron_root /var/spool/cron/crontabs/root
+RUN chown root:crontab /var/spool/cron/crontabs/root
+COPY cron_www-data /var/spool/cron/crontabs/www-data
+RUN chown www-data:crontab /var/spool/cron/crontabs/www-data
+RUN chmod 600 /var/spool/cron/crontabs/root
+RUN chmod 600 /var/spool/cron/crontabs/www-data
 
 # Cleanup
 RUN apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* \
@@ -29,6 +34,10 @@ RUN apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/
 
 # Apply custom php.ini
 COPY php-ini-overrides.ini /etc/php/7.1/cli/conf.d/99-overrides.ini
+
+# GeoIP script and set executable
+COPY update_geoip_databases.sh /opt/update_geoip_databases.sh
+RUN chmod +x /opt/update_geoip_databases.sh
 
 # Switch container to superevisord
 ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]

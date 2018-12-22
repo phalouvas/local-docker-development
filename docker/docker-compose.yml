@@ -35,16 +35,16 @@ services:
           - "traefik.port=80"    
       restart: always
 
-    smsto.redis:
+    smsto-redis:
       image: redis:alpine
-      container_name: smsto.redis
-      hostname: smsto.redis
+      container_name: smsto-redis
+      hostname: smsto-redis
       restart: always
 
-    emailverifier.redis:
+    emailverifier-redis:
       image: redis:alpine
-      container_name: emailverifier.redis
-      hostname: emailverifier.redis
+      container_name: emailverifier-redis
+      hostname: emailverifier-redis
       restart: always
 
     phpredisadmin:
@@ -53,10 +53,10 @@ services:
       image: erikdubbelboer/phpredisadmin
       restart: always
       environment:
-          - REDIS_1_HOST=smsto.redis
-          - REDIS_1_NAME=smsto.redis
-          - REDIS_2_HOST=emailverifier.redis
-          - REDIS_2_NAME=emailverifier.redis
+          - REDIS_1_HOST=smsto-redis
+          - REDIS_1_NAME=smsto-redis
+          - REDIS_2_HOST=emailverifier-redis
+          - REDIS_2_NAME=emailverifier-redis
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=Host:redis-web.${COMPOSE_BASE_DOMAIN}"
@@ -110,9 +110,9 @@ services:
         # TimeFix
         #- /etc/localtime:/etc/localtime:ro
         # GeoIP
-        - ./docker_files/db_geoip/:/application/storage/app/geoip2/
+        #- ./docker_files/db_geoip/:/application/storage/app/geoip2/
         # CRON
-        - ./docker_files/cron/php-fpm_laravel_schedule:/etc/cron.d/cron
+        #- ./docker_files/cron/php-fpm_laravel_schedule:/etc/cron.d/cron
         - ../code_smsto/:/code_smsto/:rw
         - ../code_emailverifier/:/code_emailverifier/:rw
         - ../code_emailvalidation/:/code_emailvalidation/:rw
@@ -128,7 +128,6 @@ services:
         - ../code_emailvalidation/:/code_emailvalidation/:rw
       labels:
         - "traefik.enable=true"
-        - "traefik.docker.network=web-gateway"
         - "traefik.frontend.rule=Host:supervisor.${COMPOSE_BASE_DOMAIN}"
         - "traefik.backend=horizon-supervisor"
         - "traefik.port=8001"
@@ -149,7 +148,6 @@ services:
         - /sessions
       labels:
           - "traefik.enable=true"
-          - "traefik.docker.network=web-gateway"
           - "traefik.frontend.rule=Host:phpmyadmin.${COMPOSE_BASE_DOMAIN}"
           - "traefik.backend=phpmyadmin"
           - "traefik.port=80"
@@ -160,7 +158,6 @@ services:
       restart: always
       labels:
           - "traefik.enable=true"
-          - "traefik.docker.network=web-gateway"
           - "traefik.frontend.rule=Host:mailhog.${COMPOSE_BASE_DOMAIN}"
           - "traefik.backend=mailhog"
           - "traefik.port=8025"

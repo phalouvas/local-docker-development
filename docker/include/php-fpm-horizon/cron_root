@@ -1,0 +1,2 @@
+# Cron heathCheck
+* *     * * *   echo "Last run: `date`" > /tmp/cron_check
