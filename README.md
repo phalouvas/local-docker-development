@@ -3,6 +3,7 @@
 Base domain: **local.intergo.co**
 
 Project structure tree:
+
 | Project Name      | CodePath                                   | URL                                     |
 | ----------------- | ------------------------------------------ | --------------------------------------- |
 | SMS.to            | ./code_smsto                               | smsto.local.intergo.co                  |
