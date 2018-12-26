@@ -27,9 +27,12 @@ RUN apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/
 # Apply custom php.ini
 COPY php-ini-overrides.ini /etc/php/7.1/fpm/conf.d/99-overrides.ini
 
-# Create homedir for www-data user and set ownership
-RUN mkdir /var/www
-RUN chown www-data:www-data /var/www
+# php-fpm - Startup Script
+COPY php-fpm-script /usr/bin/php-fpm
+RUN chmod +x /usr/bin/php-fpm
+
+# php-fpm - Pool file as root
+COPY www.conf /etc/php/7.1/fpm/pool.d/www.conf
 
 # Switch container to superevisord
 #ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]

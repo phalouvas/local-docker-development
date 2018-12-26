@@ -1,6 +1,9 @@
 # Defined Projects
-code_*/*
+code_smsto/*
+code_emailvalidation/*
+code_emailverifier/*
 docker/logs/*
+
 
 
 # Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer

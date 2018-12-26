@@ -22,7 +22,7 @@ Project structure tree:
 | Supervisor    | supervisor.local.intergo.co    | n/a           |
 | PhpMyAdmin    | phpmyadmin.local.intergo.co    | root autlogin |
 | Redis Browser | redis-web.local.intergo.co     | n/a           |
-| MariaDB       | root / root                    | 3307          |
+| MariaDB       | localhost / root / root                    | 3307          |
 
 
 
@@ -82,6 +82,11 @@ On each `code_*` directory you need to clone the project repository.
 
 ### Project initialization
 Each project have it own commands that need to be run and are available on project README file.
+
+
+## Cleanup commands
+
+TODO
 
 
 ## Troubleshots
