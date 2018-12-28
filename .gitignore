@@ -1,7 +1,10 @@
 # Defined Projects
+code_smsto
 code_smsto/*
 code_emailvalidation/*
 code_emailverifier/*
+
+# logs
 docker/logs/*
 
 
