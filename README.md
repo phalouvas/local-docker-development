@@ -94,12 +94,12 @@ TODO
 ### Is CRON running?
 All CRON's are defined here:
 ```
-/projects/intergo/docker# cat include/php-fpm-horizon/cron_*
+/projects/intergo/docker# cat include/php-fpm-horizon/cron_root
 # Cron heathCheck
 * *     * * *   echo "Last run: `date`" > /tmp/cron_check
 
 #GeoIP
-* *     * * *   [ ! -f /code_smsto/storage/app/geoip2/GeoLite2-Country.mmdb ] && /opt/update_geoip_databases.sh
+*/5 *     * * *   [ ! -f /code_smsto/storage/app/geoip2/GeoLite2-Country.mmdb ] && /opt/update_geoip_databases.sh
 
 # Laravel
 * *     * * *   php /code_smsto/artisan schedule:run
