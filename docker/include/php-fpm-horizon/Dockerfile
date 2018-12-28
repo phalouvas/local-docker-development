@@ -23,10 +23,7 @@ RUN mkdir -p /var/log/supervisor
 # Configure CRON and fix permissions
 COPY cron_root /var/spool/cron/crontabs/root
 RUN chown root:crontab /var/spool/cron/crontabs/root
-COPY cron_www-data /var/spool/cron/crontabs/www-data
-RUN chown www-data:crontab /var/spool/cron/crontabs/www-data
 RUN chmod 600 /var/spool/cron/crontabs/root
-RUN chmod 600 /var/spool/cron/crontabs/www-data
 
 # Cleanup
 RUN apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* \
