@@ -180,7 +180,7 @@ services:
           - "traefik.frontend.rule=Host:nodejs.${COMPOSE_BASE_DOMAIN}"
           - "traefik.backend=nodejs"
           - "traefik.port=${NODEJS_PORT}"
-      command: sh -c "npm cache clear --force && npm install --unsafe-perm && npm run ${NODEJS_MODE}"
+      command: sh -c "npm cache clear --force && npm install --unsafe-perm --loglevel verbose && npm run ${NODEJS_MODE}"
 
 #    geoip:
 #      image: registry.intergo.co/geoip:latest
