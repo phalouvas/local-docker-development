@@ -3,7 +3,7 @@ code_smsto
 code_smsto/*
 code_emailvalidation/*
 code_emailverifier/*
-
+.idea
 # logs
 docker/logs/*
 
