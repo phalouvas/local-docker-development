@@ -4,10 +4,13 @@ code_smsto/*
 code_emailvalidation/*
 code_emailverifier/*
 .idea
+
 # logs
 docker/logs/*
 
-
+# Docker files
+.env
+docker-compose.yml
 
 # Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
 #.rocketeer/
