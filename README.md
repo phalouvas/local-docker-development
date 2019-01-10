@@ -2,30 +2,6 @@
 
 Base domain: **local.intergo.co**
 
-Project structure tree:
-
-| Project Name      | CodePath                                   | URL                                     |
-| ----------------- | ------------------------------------------ | --------------------------------------- |
-| SMS.to            | ./code_smsto                               | smsto.local.intergo.co                  |
-| EmailVerifier.com | ./code_emailverifier <br>./code_validation | emailverifier.local.intergo.co          |
-| ~~Fax.to~~            | ~~./code_faxto~~                               | ~~faxto.local.intergo.co~~                  |
-| Docker            | ./docker (reservered)                      | docker files and initialization scripts |
-
-
-
-## Available services
-
-| Name          | URL                            | Port          |
-| ------------- | ------------------------------ | ------------- |
-| MailHog       | mailhog.local.intergo.co       | n/a           |
-| Mongo Express | mongo-express.local.intergo.co | n/a           |
-| Supervisor    | supervisor.local.intergo.co    | n/a           |
-| PhpMyAdmin    | phpmyadmin.local.intergo.co    | root autlogin |
-| Redis Browser | redis-web.local.intergo.co     | n/a           |
-| MariaDB       | localhost / root / root                    | 3307          |
-
-
-
 ## First time Initialization
 
 ### Requirements:
@@ -47,11 +23,25 @@ Once cloned, following structure should be available:
                  README.md
 ```
 
+All following commands will run inside `docker/` directory:
+
+```bash
+# Create a copy of your .env and docker-compose.yml from base files
+/projects/intergo/# cd docker
+/projects/intergo/docker/# cp .env.base .env
+/projects/intergo/docker/# cp docker-compose.base.yml docker-compose.yml
+```
+
+In case you use Valet, or you need different port for http, https, mysql and mongodb, you have to adjusts `.env` file using a text editor, eg.:
+
+```bash
+/projects/intergo/docker/# vi .env
+```
+
 ### Build images
 
-For initial run, you need to open a shell terminal and run following commands:
+For initial run, you need to open a shell terminal and run following commands inside `docker/` directory:
 ```
-/projects/intergo/# cd docker
 /projects/intergo/docker# docker-compose up -d --build 
 ```
 
@@ -78,16 +68,46 @@ Once following commands has been run, structure will look like:
                  .gitignore
                  README.md
 ```
-On each `code_*` directory you need to clone the project repository.
+On each `code_*` directory you need to clone the specific project repository.
 
-### Project initialization
+### Per-Project initialization
 Each project have it own commands that need to be run and are available on project README file.
+
+
+Project structure tree:
+
+| Project Name      | CodePath                                   | URL                                     |
+| ----------------- | ------------------------------------------ | --------------------------------------- |
+| SMS.to            | ./code_smsto                               | smsto.local.intergo.co                  |
+| EmailVerifier.com | ./code_emailverifier <br>./code_validation | emailverifier.local.intergo.co          |
+| ~~Fax.to~~            | ~~./code_faxto~~                               | ~~faxto.local.intergo.co~~                  |
+| Docker            | ./docker (reservered)                      | docker files and initialization scripts |
+
+
+
+## Available services
+
+| Name          | URL                            | Port          |
+| ------------- | ------------------------------ | ------------- |
+| MailHog       | mailhog.local.intergo.co       | n/a           |
+| Mongo Express | mongo-express.local.intergo.co | n/a           |
+| Supervisor    | supervisor.local.intergo.co    | n/a           |
+| PhpMyAdmin    | phpmyadmin.local.intergo.co    | root autlogin |
+| Redis Browser | redis-web.local.intergo.co     | n/a           |
+| MariaDB       | localhost / root / root                    | 3307 (default)         |
+
+
 
 
 ## Cleanup commands
 
-TODO
-
+To mass stop and delete all containers, you can use following commands:
+```bash
+# Stop all containers
+$ docker stop $(docker ps -a -q)
+# Remove all containers
+$ docker rm $(docker ps -a -q)
+```
 
 ## Troubleshots
 
