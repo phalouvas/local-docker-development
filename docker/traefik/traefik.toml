@@ -6,8 +6,10 @@ defaultEntryPoints = ["https","http"]
 [traefikLog]
   filePath = "/logs/traefik.log"
 
-[web]
+[api]
 address = ":8080"
+    [api.statistics]
+    recentErrors = 20  
 
 [entryPoints]
   [entryPoints.http]
