@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
     traefik:
-      image: traefik:latest
+      image: traefik:1.7.7
       restart: always
       ports:
         - ${COMPOSE_PORT_HTTP}:80
@@ -13,6 +13,11 @@ services:
         - ./traefik/ssl/:/ssl/
         - ./logs:/logs
       container_name: traefik
+      labels:
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=Host:traefik.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=traefik"
+          - "traefik.port=8080"    
       restart: always
 
     nginx:
@@ -23,9 +28,13 @@ services:
           - ../code_smsto/:/code_smsto/:rw
           - ../code_emailverifier/:/code_emailverifier/:rw
           - ../code_emailvalidation/:/code_emailvalidation/:rw
-          - ./include/nginx_local/conf.d:/etc/nginx/conf.d/:ro
+          - ./include/nginx_local/conf.d/:/etc/nginx/conf.d/:ro
       depends_on:
           - php-fpm
+      networks:
+        default:
+          aliases:
+            - nginx-validation
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=HostRegexp:{catchall:.*}"
@@ -181,6 +190,29 @@ services:
           - "traefik.backend=nodejs"
           - "traefik.port=${NODEJS_PORT}"
       command: sh -c "npm cache clear --force && npm install --unsafe-perm --loglevel verbose && npm run ${NODEJS_MODE}"
+
+    netdata:
+      image: netdata/netdata
+      container_name: netdata
+      hostname: netdata
+      #ports:
+      #  - 19999:19999
+      cap_add:
+        - SYS_PTRACE
+      security_opt:
+        - apparmor:unconfined
+      volumes:
+        - /proc:/host/proc:ro
+        - /sys:/host/sys:ro
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+      environment:
+        - PGID=100
+      labels:
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=Host:netdata.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=netdata"
+          - "traefik.port=19999"
+      restart: unless-stopped
 
 #    geoip:
 #      image: registry.intergo.co/geoip:latest
