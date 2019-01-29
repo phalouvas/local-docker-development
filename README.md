@@ -78,7 +78,7 @@ Project structure tree:
 
 | Project Name      | CodePath                                   | URL                                     |
 | ----------------- | ------------------------------------------ | --------------------------------------- |
-| SMS.to            | ./code_smsto                               | smsto.local.intergo.co                  |
+| SMS.to            | ./code_smsto                               | smsto.local.intergo.co <br/> smsto-api.local.intergo.co                 |
 | EmailVerifier.com | ./code_emailverifier <br>./code_validation | emailverifier.local.intergo.co          |
 | ~~Fax.to~~            | ~~./code_faxto~~                               | ~~faxto.local.intergo.co~~                  |
 | Docker            | ./docker (reservered)                      | docker files and initialization scripts |
