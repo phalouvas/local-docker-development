@@ -180,16 +180,10 @@ services:
       hostname: nodejs
       working_dir: /application
       volumes:
-          - ../${NODEJS_PROJECT}/:/application/:rw
+          - ../code_smsto/:/code_smsto/:rw
+          - ../code_emailverifier/:/code_emailverifier/:rw
       #restart: always
-      #ports:
-      #  - 8080:8080
-      labels:
-          - "traefik.enable=true"
-          - "traefik.frontend.rule=Host:nodejs.${COMPOSE_BASE_DOMAIN}"
-          - "traefik.backend=nodejs"
-          - "traefik.port=${NODEJS_PORT}"
-      command: sh -c "npm cache clear --force && npm install --unsafe-perm --loglevel verbose && npm run ${NODEJS_MODE}"
+      command: echo "Container ready."
 
     netdata:
       image: netdata/netdata
