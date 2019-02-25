@@ -4,12 +4,18 @@ Base domain: **local.intergo.co**
 
 ## First time Initialization
 
+---
+
 ### Requirements:
 * Docker Latest version
 * Docker-Compose Latest version (for Mac/Windows is already integrated)
 * Hardware min.: 2xCPU, 2GB RAM, 5GB Disk
 
+Note: If you just fresh installed docker on Ubuntu system and you receive some permissions error, check [Troubleshoot](#troubleshoot-zone) area.
+
 ### Project cloning
+
+---
 
 Create a directory on your projects directory where this repository will be cloned. Suggested:
 `/projects/intergo/`
@@ -40,6 +46,8 @@ In case you use Valet, or you need different port for http, https, mysql and mon
 
 ### Build images
 
+---
+
 For initial run, you need to open a shell terminal and run following commands inside `docker/` directory:
 ```
 /projects/intergo/docker# docker-compose up -d --build 
@@ -47,7 +55,9 @@ For initial run, you need to open a shell terminal and run following commands in
 
 It will take 5-30min, depending on your machine and internet speed.
 
-### Initializa mysql
+### Initialize mysql
+
+---
 
 MariaDB container is used for all projects, for this, we need to create databases and users for each project.
 
@@ -57,6 +67,9 @@ In same terminal, run following command:
 ```
 
 ### Per project clone
+
+---
+
 Once following commands has been run, structure will look like:
 ```
 /projects/intergo/  
@@ -72,6 +85,8 @@ On each `code_*` directory you need to clone the specific project repository.
 
 ### Per-Project initialization
 Each project have it own commands that need to be run and are available on project README file.
+
+
 
 
 Project structure tree:
@@ -109,7 +124,26 @@ $ docker stop $(docker ps -a -q)
 $ docker rm $(docker ps -a -q)
 ```
 
-## Troubleshots
+
+## Troubleshot Zone
+---
+
+### Ubuntu users, fresh install of docker
+
+In case you received permission denied error like:
+
+```
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http:///var/run/docker.sock/v1.39/containers/json: dial unix /var/run/docker.sock: connect: permission denied
+```
+
+The main reason for this is that your current user is not in docker group.
+
+Run following command to fix that:
+```bash
+sudo usermod --append --groups docker `whoami`
+```
+
+
 
 ### Is CRON running?
 All CRON's are defined here:
