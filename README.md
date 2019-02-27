@@ -136,9 +136,10 @@ In case you received permission denied error like:
 Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http:///var/run/docker.sock/v1.39/containers/json: dial unix /var/run/docker.sock: connect: permission denied
 ```
 
-The main reason for this is that your current user is not in docker group.
+Reason for this is that your current user is not part of docker group and is unable to run docker commands.
 
-Run following command to fix that:
+To fix it, run following command:
+
 ```bash
 sudo usermod --append --groups docker `whoami`
 ```
