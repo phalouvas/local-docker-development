@@ -1,0 +1,5 @@
+{
+    "require-dev": {
+        "laravel/telescope": "^2.0"
+    }
+}
