@@ -16,3 +16,4 @@ docker-compose.yml
 #.rocketeer/
 /code_smsto/log.log
 !/code_smsto/log.log
+/nbproject/private/
