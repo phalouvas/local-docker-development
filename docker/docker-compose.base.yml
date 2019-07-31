@@ -29,6 +29,7 @@ services:
           - ../code_emailverifier/:/code_emailverifier/:rw
           - ../code_emailvalidation/:/code_emailvalidation/:rw
           - ../code_ph-money/:/code_ph-money/:rw
+          - ../code_msms/:/code_msms/:rw
           - ./include/nginx_local/conf.d/:/etc/nginx/conf.d/:ro
       depends_on:
           - php-fpm
@@ -126,6 +127,7 @@ services:
         - ../code_emailverifier/:/code_emailverifier/:rw
         - ../code_emailvalidation/:/code_emailvalidation/:rw
         - ../code_ph-money/:/code_ph-money/:rw
+        - ../code_msms/:/code_msms/:rw
 
     php-fpm-horizon:
       build:
@@ -185,6 +187,7 @@ services:
           - ../code_smsto/:/code_smsto/:rw
           - ../code_emailverifier/:/code_emailverifier/:rw
           - ../code_ph-money/:/code_ph-money/:rw
+          - ../code_msms/:/code_msms/:rw
       #restart: unless-stopped
       command: echo "Container ready."
 
