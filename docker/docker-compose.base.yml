@@ -36,7 +36,9 @@ services:
       networks:
         default:
           aliases:
-            - nginx-validation
+            - nginx-smsto-api
+            - nginx-msms
+            - nginx-msas
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=HostRegexp:{catchall:.*}"
