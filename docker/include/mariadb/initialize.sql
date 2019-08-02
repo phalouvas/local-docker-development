@@ -5,11 +5,13 @@ GRANT ALL PRIVILEGES ON smsto.* TO 'smsto'@'%';
 
 # Create Messages Microservice DB
 CREATE DATABASE IF NOT EXISTS msms /*\!40100 DEFAULT CHARACTER SET utf8 */;
-GRANT ALL PRIVILEGES ON smsto.* TO 'msms'@'%';
+CREATE USER IF NOT EXISTS msms@'%' IDENTIFIED BY 'msms';
+GRANT ALL PRIVILEGES ON msms.* TO 'msms'@'%';
 
 # Create Authentication Microservice DB
 CREATE DATABASE IF NOT EXISTS msas /*\!40100 DEFAULT CHARACTER SET utf8 */;
-GRANT ALL PRIVILEGES ON smsto.* TO 'msas'@'%';
+CREATE USER IF NOT EXISTS msas@'%' IDENTIFIED BY 'msas';
+GRANT ALL PRIVILEGES ON msas.* TO 'msas'@'%';
 
 # Create EmailVerifier DB
 CREATE DATABASE IF NOT EXISTS emailverifier /*\!40100 DEFAULT CHARACTER SET utf8 */;
