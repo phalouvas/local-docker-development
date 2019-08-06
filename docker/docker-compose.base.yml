@@ -50,6 +50,29 @@ services:
           - "traefik.port=80"    
       restart: unless-stopped
 
+    nginx-msas:
+      image: nginx:alpine
+      container_name: nginx-msas
+      hostname: nginx-msas
+      volumes:
+          - ../code_msas/:/code_msas/:rw
+          - ./include/nginx_local/conf.d/:/etc/nginx/conf.d/:ro
+      depends_on:
+          - php-fpm
+      restart: unless-stopped
+
+    nginx-msms:
+      image: nginx:alpine
+      container_name: nginx-msms
+      hostname: nginx-msms
+      volumes:
+          - ../code_msms/:/code_msms/:rw
+          - ./include/nginx_local/conf.d/:/etc/nginx/conf.d/:ro
+      depends_on:
+          - php-fpm
+      restart: unless-stopped
+
+
     smsto-redis:
       image: redis:alpine
       container_name: smsto-redis

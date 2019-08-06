@@ -18,13 +18,13 @@ address = ":8080"
      entryPoint = "https"
   [entryPoints.https]
   address = ":443"
-  compress = true
+#  compress = true
     [entryPoints.https.tls]
       [[entryPoints.https.tls.certificates]]
       certFile = "/ssl/local.intergo.co/fullchain.pem"
       keyFile = "/ssl/local.intergo.co/privkey.pem"    
 
-[retry]
+#[retry]
 
 [docker]
 endpoint = "unix:///var/run/docker.sock"

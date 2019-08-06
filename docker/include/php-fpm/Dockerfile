@@ -3,6 +3,9 @@ FROM phpdockerio/php71-fpm:latest
 # Fix debconf warnings upon build
 ARG DEBIAN_FRONTEND=noninteractive
 
+# Switch to local country mirror
+RUN sed -i -e "s#http://archive#http://`curl ifconfig.co/country-iso`.archive#g" /etc/apt/sources.list
+
 # Install selected extensions and other stuff
 RUN apt-get update \
     && apt-get -y --no-install-recommends install php7.1-mysql php-redis php7.1-gd php-imagick php7.1-intl php-mongodb \
