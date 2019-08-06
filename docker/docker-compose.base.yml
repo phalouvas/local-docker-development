@@ -36,6 +36,9 @@ services:
       networks:
         default:
           aliases:
+            # Email-Verifier
+            - nginx-validation
+            # SMSto API + MS
             - nginx-smsto-api
             - nginx-msms
             - nginx-msas

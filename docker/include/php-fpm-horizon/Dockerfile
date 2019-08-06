@@ -32,10 +32,6 @@ RUN apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/
 # Apply custom php.ini
 COPY php-ini-overrides.ini /etc/php/7.1/cli/conf.d/99-overrides.ini
 
-# GeoIP script and set executable
-COPY update_geoip_databases.sh /opt/update_geoip_databases.sh
-RUN chmod +x /opt/update_geoip_databases.sh
-
 # Switch container to superevisord
 ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
 # initial is on

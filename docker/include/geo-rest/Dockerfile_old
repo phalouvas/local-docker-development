@@ -1,0 +1,30 @@
+FROM golang:onbuild
+MAINTAINER Klaus Post <klauspost@gmail.com>
+
+# copy geoipupdate settings
+COPY GeoIP.conf /usr/etc/GeoIP.conf
+
+# install geoipupdate
+RUN BUILD_DEPS='gcc make libc-dev libtool automake autoconf git' \
+ && apk --no-cache add curl-dev ${BUILD_DEPS} \
+ && git clone https://github.com/maxmind/geoipupdate /tmp/geoipupdate \
+ && cd /tmp/geoipupdate \
+ && ./bootstrap \
+ && ./configure --prefix=/usr \
+ && make \
+ && make install \
+ && cd \
+ && apk del --purge ${BUILD_DEPS} \
+ && rm -rf /var/cache/apk/* \
+ && rm -rf /tmp/geoipupdate
+
+# Update 
+RUN geoipupdate
+
+#CMD ["app", "-db=/data/geodb.mmdb"]
+CMD ["app", "-db=/usr/local/share/GeoIP/GeoLite2-City.mmdb", "-listen=:80"]
+
+EXPOSE 80
+
+
+
