@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
     traefik:
-      image: traefik:1.7.7
+      image: traefik:1.7.12
       restart: always
       ports:
         - ${COMPOSE_PORT_HTTP}:80
@@ -196,28 +196,6 @@ services:
       #restart: unless-stopped
       command: echo "Container ready."
 
-    # netdata:
-    #   image: netdata/netdata
-    #   container_name: netdata
-    #   hostname: netdata
-    #   #ports:
-    #   #  - 19999:19999
-    #   cap_add:
-    #     - SYS_PTRACE
-    #   security_opt:
-    #     - apparmor:unconfined
-    #   volumes:
-    #     - /proc:/host/proc:ro
-    #     - /sys:/host/sys:ro
-    #     - /var/run/docker.sock:/var/run/docker.sock:ro
-    #   environment:
-    #     - PGID=100
-    #   labels:
-    #       - "traefik.enable=true"
-    #       - "traefik.frontend.rule=Host:netdata.${COMPOSE_BASE_DOMAIN}"
-    #       - "traefik.backend=netdata"
-    #       - "traefik.port=19999"
-    #   restart: unless-stopped
 
 #    geoip:
 #      image: registry.intergo.co/geoip:latest
