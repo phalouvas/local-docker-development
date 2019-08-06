@@ -3,6 +3,8 @@ code_smsto
 code_smsto/*
 code_emailvalidation/*
 code_emailverifier/*
+code_msms/*
+code_msas/*
 .idea
 
 # logs
@@ -16,3 +18,4 @@ docker-compose.yml
 #.rocketeer/
 /code_smsto/log.log
 !/code_smsto/log.log
+/nbproject/private/

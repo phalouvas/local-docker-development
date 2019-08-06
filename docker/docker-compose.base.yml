@@ -18,7 +18,7 @@ services:
           - "traefik.frontend.rule=Host:traefik.${COMPOSE_BASE_DOMAIN}"
           - "traefik.backend=traefik"
           - "traefik.port=8080"    
-      restart: always
+      restart: unless-stopped
 
     nginx:
       image: nginx:alpine
@@ -28,32 +28,36 @@ services:
           - ../code_smsto/:/code_smsto/:rw
           - ../code_emailverifier/:/code_emailverifier/:rw
           - ../code_emailvalidation/:/code_emailvalidation/:rw
+          - ../code_msas/:/code_msas/:rw
+          - ../code_msms/:/code_msms/:rw
           - ./include/nginx_local/conf.d/:/etc/nginx/conf.d/:ro
       depends_on:
           - php-fpm
       networks:
         default:
           aliases:
-            - nginx-validation
+            - nginx-smsto-api
+            - nginx-msms
+            - nginx-msas
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=HostRegexp:{catchall:.*}"
           - "traefik.frontend.priority=1"
           - "traefik.backend=nginx"
           - "traefik.port=80"    
-      restart: always
+      restart: unless-stopped
 
     smsto-redis:
       image: redis:alpine
       container_name: smsto-redis
       hostname: smsto-redis
-      restart: always
+      restart: unless-stopped
 
     emailverifier-redis:
       image: redis:alpine
       container_name: emailverifier-redis
       hostname: emailverifier-redis
-      restart: always
+      restart: unless-stopped
 
     phpredisadmin:
       container_name: phpredisadmin
@@ -87,7 +91,7 @@ services:
       command: --smallfiles
       container_name: mongo
       hostname: mongo
-      restart: always
+      restart: unless-stopped
       ports:
         - ${COMPOSE_PORT_MONGO}:27017
       #environment:
@@ -124,6 +128,8 @@ services:
         - ../code_smsto/:/code_smsto/:rw
         - ../code_emailverifier/:/code_emailverifier/:rw
         - ../code_emailvalidation/:/code_emailvalidation/:rw
+        - ../code_msas/:/code_msas/:rw
+        - ../code_msms/:/code_msms/:rw
 
     php-fpm-horizon:
       build:
@@ -182,7 +188,9 @@ services:
       volumes:
           - ../code_smsto/:/code_smsto/:rw
           - ../code_emailverifier/:/code_emailverifier/:rw
-      #restart: always
+          - ../code_msas/:/code_msas/:rw
+          - ../code_msms/:/code_msms/:rw
+      #restart: unless-stopped
       command: echo "Container ready."
 
     # netdata:
@@ -214,7 +222,7 @@ services:
 #      #  context: ./include/geoip
 #      container_name: geoip
 #      hostname: geoip
-#      restart: always
+#      restart: unless-stopped
 #      volumes:
 #         - ./docker_files/db_geoip/:/usr/share/GeoIP/
 #
