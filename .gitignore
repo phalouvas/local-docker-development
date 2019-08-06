@@ -3,7 +3,9 @@ code_smsto
 code_smsto/*
 code_emailvalidation/*
 code_emailverifier/*
+code_msMS
 code_msms/*
+code_msas
 code_msas/*
 .idea
 
@@ -19,3 +21,4 @@ docker-compose.yml
 /code_smsto/log.log
 !/code_smsto/log.log
 /nbproject/private/
+/.vscode/
