@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
     traefik:
-      image: traefik:1.7.12
+      image: traefik:1.7.7
       restart: always
       ports:
         - ${COMPOSE_PORT_HTTP}:80
@@ -36,9 +36,6 @@ services:
       networks:
         default:
           aliases:
-            # Email-Verifier
-            - nginx-validation
-            # SMSto API + MS
             - nginx-smsto-api
             - nginx-msms
             - nginx-msas
@@ -50,35 +47,18 @@ services:
           - "traefik.port=80"    
       restart: unless-stopped
 
-    nginx-msas:
-      image: nginx:alpine
-      container_name: nginx-msas
-      hostname: nginx-msas
-      volumes:
-          - ../code_msas/:/code_msas/:rw
-          - ./include/nginx_local/conf.d/:/etc/nginx/conf.d/:ro
-      depends_on:
-          - php-fpm
-      restart: unless-stopped
-
-    nginx-msms:
-      image: nginx:alpine
-      container_name: nginx-msms
-      hostname: nginx-msms
-      volumes:
-          - ../code_msms/:/code_msms/:rw
-          - ./include/nginx_local/conf.d/:/etc/nginx/conf.d/:ro
-      depends_on:
-          - php-fpm
-      restart: unless-stopped
-
-
     smsto-redis:
       image: redis:alpine
       container_name: smsto-redis
       hostname: smsto-redis
       restart: unless-stopped
-
+      
+    msms-redis:
+      image: redis:alpine
+      container_name: msms-redis
+      hostname: msms-redis
+      restart: unless-stopped
+      
     emailverifier-redis:
       image: redis:alpine
       container_name: emailverifier-redis
@@ -93,8 +73,10 @@ services:
       environment:
           - REDIS_1_HOST=smsto-redis
           - REDIS_1_NAME=smsto-redis
-          - REDIS_2_HOST=emailverifier-redis
-          - REDIS_2_NAME=emailverifier-redis
+          - REDIS_2_HOST=msms-redis
+          - REDIS_2_NAME=msms-redis
+          - REDIS_3_HOST=emailverifier-redis
+          - REDIS_3_NAME=emailverifier-redis
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=Host:redis-web.${COMPOSE_BASE_DOMAIN}"
