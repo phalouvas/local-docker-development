@@ -146,6 +146,7 @@ services:
       hostname: php-fpm-horizon
       volumes:
         - ../code_smsto/:/code_smsto/:rw
+        - ../code_msms/:/code_msms/:rw
         - ../code_emailverifier/:/code_emailverifier/:rw
         - ../code_emailvalidation/:/code_emailvalidation/:rw
       labels:
