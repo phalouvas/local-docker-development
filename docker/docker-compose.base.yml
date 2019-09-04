@@ -59,6 +59,12 @@ services:
       hostname: msms-redis
       restart: unless-stopped
       
+    msas-redis:
+      image: redis:alpine
+      container_name: msas-redis
+      hostname: msas-redis
+      restart: unless-stopped
+      
     emailverifier-redis:
       image: redis:alpine
       container_name: emailverifier-redis
@@ -75,8 +81,10 @@ services:
           - REDIS_1_NAME=smsto-redis
           - REDIS_2_HOST=msms-redis
           - REDIS_2_NAME=msms-redis
-          - REDIS_3_HOST=emailverifier-redis
-          - REDIS_3_NAME=emailverifier-redis
+          - REDIS_3_HOST=msas-redis
+          - REDIS_3_NAME=msas-redis
+          - REDIS_4_HOST=emailverifier-redis
+          - REDIS_4_NAME=emailverifier-redis
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=Host:redis-web.${COMPOSE_BASE_DOMAIN}"
