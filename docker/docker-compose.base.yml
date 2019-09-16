@@ -3,7 +3,6 @@ version: '3.6'
 services:
     traefik:
       image: traefik:1.7.12
-      restart: always
       ports:
         - ${COMPOSE_PORT_HTTP}:80
         - ${COMPOSE_PORT_HTTPS}:443
@@ -18,7 +17,6 @@ services:
           - "traefik.frontend.rule=Host:traefik.${COMPOSE_BASE_DOMAIN}"
           - "traefik.backend=traefik"
           - "traefik.port=8080"    
-      restart: no
 
     nginx:
       image: nginx:alpine
@@ -45,37 +43,31 @@ services:
           - "traefik.frontend.priority=1"
           - "traefik.backend=nginx"
           - "traefik.port=80"    
-      restart: no
 
     smsto-redis:
       image: redis:alpine
       container_name: smsto-redis
       hostname: smsto-redis
-      restart: no
       
     msms-redis:
       image: redis:alpine
       container_name: msms-redis
       hostname: msms-redis
-      restart: no
       
     msas-redis:
       image: redis:alpine
       container_name: msas-redis
       hostname: msas-redis
-      restart: no
       
     emailverifier-redis:
       image: redis:alpine
       container_name: emailverifier-redis
       hostname: emailverifier-redis
-      restart: no
 
     phpredisadmin:
       container_name: phpredisadmin
       hostname: phpredisadmin
       image: erikdubbelboer/phpredisadmin
-      restart: no
       environment:
           - REDIS_1_HOST=smsto-redis
           - REDIS_1_NAME=smsto-redis
@@ -107,7 +99,6 @@ services:
       command: --smallfiles
       container_name: mongo
       hostname: mongo
-      restart: no
       ports:
         - ${COMPOSE_PORT_MONGO}:27017
       #environment:
@@ -120,7 +111,6 @@ services:
       hostname: mongo-express
       depends_on:
           - mongo
-      restart: no
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=Host:mongo-express.${COMPOSE_BASE_DOMAIN}"
@@ -172,7 +162,6 @@ services:
         - PMA_USER=root
         - PMA_PASSWORD=root
         - PMA_HOST=mariadb
-      restart: no
       depends_on:
         - mariadb
 #      ports:
@@ -188,7 +177,6 @@ services:
     mailhog:
       image: mailhog/mailhog:latest
       container_name: mailhog
-      restart: no
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=Host:mailhog.${COMPOSE_BASE_DOMAIN}"
@@ -207,7 +195,6 @@ services:
           - ../code_emailverifier/:/code_emailverifier/:rw
           - ../code_msas/:/code_msas/:rw
           - ../code_msms/:/code_msms/:rw
-      #restart: no
       command: echo "Container ready."
 
 
@@ -217,7 +204,6 @@ services:
 #      #  context: ./include/geoip
 #      container_name: geoip
 #      hostname: geoip
-#      restart: no
 #      volumes:
 #         - ./docker_files/db_geoip/:/usr/share/GeoIP/
 #
