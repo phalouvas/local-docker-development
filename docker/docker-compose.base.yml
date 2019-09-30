@@ -28,6 +28,7 @@ services:
           - ../code_emailvalidation/:/code_emailvalidation/:rw
           - ../code_msas/:/code_msas/:rw
           - ../code_msms/:/code_msms/:rw
+          - ../code_mockserver/:/code_mockserver/:rw
           - ./include/nginx_local/conf.d/:/etc/nginx/conf.d/:ro
       depends_on:
           - php-fpm
@@ -35,8 +36,9 @@ services:
         default:
           aliases:
             - nginx-smsto-api
-            - nginx-msms
+            - nginx-msms            
             - nginx-msas
+            - nginx-mock-server
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=HostRegexp:{catchall:.*}"
@@ -54,6 +56,11 @@ services:
       container_name: msms-redis
       hostname: msms-redis
       
+    mockserver-redis:
+      image: redis:alpine
+      container_name: mockserver-redis
+      hostname: mockserver-redis
+      
     msas-redis:
       image: redis:alpine
       container_name: msas-redis
@@ -63,7 +70,7 @@ services:
       image: redis:alpine
       container_name: emailverifier-redis
       hostname: emailverifier-redis
-
+    
     phpredisadmin:
       container_name: phpredisadmin
       hostname: phpredisadmin
@@ -77,6 +84,8 @@ services:
           - REDIS_3_NAME=msas-redis
           - REDIS_4_HOST=emailverifier-redis
           - REDIS_4_NAME=emailverifier-redis
+          - REDIS_5_HOST=mockserver-redis
+          - REDIS_5_NAME=mockserver-redis
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=Host:redis-web.${COMPOSE_BASE_DOMAIN}"
@@ -136,6 +145,7 @@ services:
         - ../code_emailvalidation/:/code_emailvalidation/:rw
         - ../code_msas/:/code_msas/:rw
         - ../code_msms/:/code_msms/:rw
+        - ../code_mockserver/:/code_mockserver/:rw
 
     php-fpm-horizon:
       build:
@@ -147,6 +157,7 @@ services:
         - ../code_msms/:/code_msms/:rw
         - ../code_emailverifier/:/code_emailverifier/:rw
         - ../code_emailvalidation/:/code_emailvalidation/:rw
+        - ../code_mockserver/:/code_mockserver/:rw
       labels:
         - "traefik.enable=true"
         - "traefik.frontend.rule=Host:supervisor.${COMPOSE_BASE_DOMAIN}"
@@ -195,6 +206,7 @@ services:
           - ../code_emailverifier/:/code_emailverifier/:rw
           - ../code_msas/:/code_msas/:rw
           - ../code_msms/:/code_msms/:rw
+          - ../code_mockserver/:/code_mockserver/:rw
       command: echo "Container ready."
 
 
