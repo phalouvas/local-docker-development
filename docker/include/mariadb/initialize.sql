@@ -19,7 +19,7 @@ CREATE USER IF NOT EXISTS emailverifier@'%' IDENTIFIED BY 'emailverifier';
 GRANT ALL PRIVILEGES ON emailverifier.* TO 'emailverifier'@'%';
 
 # Create Mock Server DB
-CREATE DATABASE IF NOT EXISTS msms /*\!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE IF NOT EXISTS mockserver /*\!40100 DEFAULT CHARACTER SET utf8 */;
 CREATE USER IF NOT EXISTS mockserver@'%' IDENTIFIED BY 'mockserver';
 GRANT ALL PRIVILEGES ON mockserver.* TO 'mockserver'@'%';
 
