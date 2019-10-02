@@ -3,4 +3,5 @@
 
 # Laravel
 * *     * * *   php /code_smsto/artisan schedule:run
+* *     * * *   php /code_msms/artisan schedule:run
 * *     * * *   php /code_emailverifier/artisan schedule:run
