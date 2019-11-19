@@ -1,11 +1,11 @@
-FROM phpdockerio/php71-cli:latest
+FROM phpdockerio/php73-cli:latest
 #WORKDIR "/application"
 # Fix debconf warnings upon build
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Install selected extensions and other stuff
 RUN apt-get update \
-    && apt-get -y --no-install-recommends install php7.1-mysql php-redis php7.1-gd php-imagick php7.1-intl php-mongodb php7.1-xsl php-yaml
+    && apt-get -y --no-install-recommends install php7.3-mysql php-redis php7.3-gd php-imagick php7.3-intl php-mongodb php7.3-xsl php-yaml
 
 # Packages for wkhtmltopdf
 #RUN apt-get install -y fontconfig libfontconfig1 libfreetype6 libpng12-0 libssl1.0.0 \
@@ -30,7 +30,7 @@ RUN apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/
     && export TERM=xterm
 
 # Apply custom php.ini
-COPY php-ini-overrides.ini /etc/php/7.1/cli/conf.d/99-overrides.ini
+COPY php-ini-overrides.ini /etc/php/7.3/cli/conf.d/99-overrides.ini
 
 # Switch container to superevisord
 ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
