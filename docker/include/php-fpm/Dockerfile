@@ -37,12 +37,12 @@ RUN chmod +x /usr/bin/php-fpm
 
 # php-fpm - Pool file as root
 
-COPY www.conf /etc/php/7.3/fpm/pool.d/www.conf
+#COPY www.conf /etc/php/7.3/fpm/pool.d/www.conf
 
 # Switch container to superevisord
 #ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
 # initial is on
-CMD /usr/bin/php-fpm
+#CMD /usr/bin/php-fpm
 
 # Expose port for Supervisor and php-fpm
 EXPOSE 9000

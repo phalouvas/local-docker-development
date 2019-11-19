@@ -7,6 +7,10 @@ code_msMS
 code_msms/*
 code_msas
 code_msas/*
+code_mockserver
+code_mockserver/*
+code_nosms
+code_nosms/*
 .idea
 
 # logs
