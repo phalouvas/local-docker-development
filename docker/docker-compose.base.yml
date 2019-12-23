@@ -126,6 +126,28 @@ services:
           - "traefik.backend=mongo-express"
           - "traefik.port=8081"
 
+    rabbitmq:
+      image: rabbitmq:3-management
+      hostname: rabbitmq
+      container_name: rabbitmq
+      #ports:
+      #  # Management port
+      #  - "15672:15672"
+      #  # Service port
+      #  - "5672:5672"
+      labels:
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=Host:rabbitmq.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=rabbitmq"
+          - "traefik.port=15672"
+      #volumes:
+      #  # Database mount
+      #  - ./db_rabbitmq/:/var/lib/rabbitmq
+      restart: "unless-stopped"
+
+
+
+
     php-fpm:
       build:
         context: ./include/php-fpm
