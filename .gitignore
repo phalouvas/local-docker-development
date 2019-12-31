@@ -11,6 +11,8 @@ code_mockserver
 code_mockserver/*
 code_nosms
 code_nosms/*
+htdocs
+htdocs/*
 .idea
 
 # logs

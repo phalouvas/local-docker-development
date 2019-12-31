@@ -145,9 +145,6 @@ services:
       #  - ./db_rabbitmq/:/var/lib/rabbitmq
       restart: "unless-stopped"
 
-
-
-
     php-fpm:
       build:
         context: ./include/php-fpm
@@ -174,6 +171,8 @@ services:
         context: ./include/php-fpm-horizon
       container_name: php-fpm-horizon
       hostname: php-fpm-horizon
+      depends_on:
+          - rabbitmq
       volumes:
         - ../code_smsto/:/code_smsto/:rw
         - ../code_msms/:/code_msms/:rw        
