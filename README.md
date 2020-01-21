@@ -192,7 +192,7 @@ The location of **hosts** file:
 
 SOME SIDE NOTES/QUESTIONS (**TO BE REMOVED**, please ignore this): 
 
-For some reason, the current local-docker is using "real" subdomains of `intergo.co` which point to these 4 IP addreses (**proxies**) (there's round-robin): 
+For some reason, the current local-docker is using subdomains of `intergo.co` which point to these 4 IP addreses (**proxies**) (there's round-robin): 
 ```
 1800	IN	A	198.54.117.200
 1800	IN	A	198.54.117.199
