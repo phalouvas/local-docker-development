@@ -182,8 +182,8 @@ For example, when you try to open https://smsto.local.intergo.co but you get **U
 ... and then check if it is working. 
 
 The location of **hosts** file:
-**Linux/Ubuntu**: `/etc/hosts`
-**Windows 10**: `C:\Windows\System32\drivers\etc\hosts`
+    * **Linux/Ubuntu**: `/etc/hosts`
+    * **Windows 10**: `C:\Windows\System32\drivers\etc\hosts`
 
 ------------------------------------------------------------
 
