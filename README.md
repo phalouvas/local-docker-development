@@ -167,9 +167,9 @@ Then, a 1min CRON check is run on:
 Last run: Sun Dec 23 09:59:01 UTC 2018
 ```
 
-### Web applications still do not work
+### Web applications still not working?
 
-For example, when you try to open https://smsto.local.intergo.co but you get **Unable to connect** (Firefox) or **This site can’t be reached** (Chromium based browsers), then in **hosts** file of your OS add the following:
+For example, when you try to open https://smsto.local.intergo.co and you get **Unable to connect** (Firefox) or **This site can’t be reached** (Chromium based browsers), then in **hosts** file of your OS add the following:
 
 ```
 127.0.0.1 smsto.local.intergo.co
@@ -185,7 +185,7 @@ For example, when you try to open https://smsto.local.intergo.co but you get **U
 
 The location of **hosts** file:
 
-* **Linux/Ubuntu**: `/etc/hosts`
+* **Linux/Mac**: `/etc/hosts`
 * **Windows 10**: `C:\Windows\System32\drivers\etc\hosts`
 
 ------------------------------------------------------------
@@ -200,4 +200,4 @@ For some reason, the current local-docker is using "real" subdomains of `intergo
 1800	IN	A	198.54.117.197
 ```
 all these four IP addresses represent proxies that redirect to localhost...
-It's unclear what is the logic behind all this, I wonder why is local-docker set to work like this...
+It's unclear what is the logic behind all this, I wonder why is local-docker set to work like this... Are there any disadvantages (in terms of how applications work) when bypassing these proxies by adding in records **hosts** file?
