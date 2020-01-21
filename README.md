@@ -192,12 +192,12 @@ The location of **hosts** file:
 
 SOME SIDE NOTES/QUESTIONS (**TO BE REMOVED**, please ignore this): 
 
-For some reason, the current local-docker is using subdomains of `intergo.co` which point to these 4 IP addreses (**proxies**) (there's round-robin): 
+For some reason, the current local-docker is using subdomains of `intergo.co` which point to these four IP addreses (**proxies**) (there's round-robin): 
 ```
 1800	IN	A	198.54.117.200
 1800	IN	A	198.54.117.199
 1800	IN	A	198.54.117.198
 1800	IN	A	198.54.117.197
 ```
-all these four IP addresses represent proxies that redirect to localhost...
+All these four IP addresses represent proxies that redirect to localhost...
 It's unclear what is the logic behind all this, I wonder why is local-docker set to work like this... Are there any disadvantages (in terms of how applications work) when bypassing these proxies by adding in records **hosts** file?
