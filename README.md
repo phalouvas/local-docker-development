@@ -179,7 +179,7 @@ For example, when you try to open https://smsto.local.intergo.co but you get **U
 127.0.0.1 supervisor.local.intergo.co
 127.0.0.1 redis-web.local.intergo.co
 ```
-... and then check if it is working now. 
+... and then check if it is working. 
 
 The location of **hosts** file:
 **Linux/Ubuntu**: `/etc/hosts`
