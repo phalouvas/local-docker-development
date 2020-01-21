@@ -178,6 +178,8 @@ For example, when you try to open https://smsto.local.intergo.co but you get **U
 127.0.0.1 mongo-express.local.intergo.co
 127.0.0.1 supervisor.local.intergo.co
 127.0.0.1 redis-web.local.intergo.co
+127.0.0.1 msms.local.intergo.co
+127.0.0.1 msas.local.intergo.co
 ```
 ... and then check if it is working. 
 
