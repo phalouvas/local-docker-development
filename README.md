@@ -166,3 +166,35 @@ Then, a 1min CRON check is run on:
 /projects/intergo/docker# docker-compose exec php-fpm-horizon cat /tmp/cron_check
 Last run: Sun Dec 23 09:59:01 UTC 2018
 ```
+
+### Web applications still do not work
+
+For example, when you try to open https://smsto.local.intergo.co but you get **Unable to connect** (Firefox) or **This site can’t be reached** (Chromium based browsers), then in **hosts** file of your OS add the following:
+
+```
+127.0.0.1 smsto.local.intergo.co
+127.0.0.1 mailhog.local.intergo.co
+127.0.0.1 phpmyadmin.local.intergo.co
+127.0.0.1 mongo-express.local.intergo.co
+127.0.0.1 supervisor.local.intergo.co
+127.0.0.1 redis-web.local.intergo.co
+```
+... and then check if it is working now. 
+
+The location of **hosts** file:
+**Linux/Ubuntu**: `/etc/hosts`
+**Windows 10**: `C:\Windows\System32\drivers\etc\hosts`
+
+------------------------------------------------------------
+
+SOME SIDE NOTES/QUESTIONS (**TO BE REMOVED**, please ignore this): 
+
+For some reason, the current local-docker is using "real" subdomains of `intergo.co` which point to these 4 IP addreses (**proxies**) (thre's round-robin): 
+```
+1800	IN	A	198.54.117.200
+1800	IN	A	198.54.117.199
+1800	IN	A	198.54.117.198
+1800	IN	A	198.54.117.197
+```
+all these four IP addresses represent proxies that redirect to localhost...
+It's unclear what is the logic behind all this, I wonder why is local-docker set to work like this...
