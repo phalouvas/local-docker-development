@@ -167,7 +167,7 @@ Then, a 1min CRON check is run on:
 Last run: Sun Dec 23 09:59:01 UTC 2018
 ```
 
-### Web applications still not working?
+### Web applications still not working?.
 
 For example, when you try to open https://smsto.local.intergo.co and you get **"Unable to connect"** (Firefox) or **"This site can’t be reached"** (Chromium based browsers), then in **hosts** file of your OS add the following:
 
