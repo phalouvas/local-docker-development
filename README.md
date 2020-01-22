@@ -180,6 +180,8 @@ For example, when you try to open https://smsto.local.intergo.co and you get **"
 127.0.0.1 redis-web.local.intergo.co
 127.0.0.1 msms.local.intergo.co
 127.0.0.1 msas.local.intergo.co
+127.0.0.1 rabbitmq.local.intergo.co
+127.0.0.1 mockserver.local.intergo.co
 ```
 ... and then check if it is working. 
 
