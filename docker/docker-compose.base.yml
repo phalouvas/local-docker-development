@@ -143,7 +143,6 @@ services:
       #volumes:
       #  # Database mount
       #  - ./db_rabbitmq/:/var/lib/rabbitmq
-      restart: "unless-stopped"
 
     php-fpm:
       build:
@@ -228,18 +227,59 @@ services:
           - ../code_msas/:/code_msas/:rw
           - ../code_msms/:/code_msms/:rw
       command: echo "Container ready."
-
-
-#    geoip:
-#      image: registry.intergo.co/geoip:latest
-#      #build:
-#      #  context: ./include/geoip
-#      container_name: geoip
-#      hostname: geoip
-#      volumes:
-#         - ./docker_files/db_geoip/:/usr/share/GeoIP/
-#
-
+    
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.2
+        container_name: elasticsearch
+        environment:
+          - http.host=0.0.0.0
+          - transport.host=localhost
+          - network.host=0.0.0.0
+          - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        labels:
+          - "traefik.enable=false"
+        ulimits:
+          memlock:
+            soft: -1
+            hard: -1
+        networks:
+          - default
+    
+    graylog:
+        image: graylog/graylog:3.1
+        container_name: graylog
+        labels:
+            - "traefik.enable=true"
+            - "traefik.web.port=9000"
+            - "traefik.web.frontend.rule=Host:graylog.${COMPOSE_BASE_DOMAIN}"
+            - "traefik.web.backend.healthcheck.path=/"
+            - "traefik.web.backend.healthcheck.interval=10s"
+        environment:
+          # CHANGE ME (must be at least 16 characters)!
+          - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
+          # Password: admin
+          - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+          - GRAYLOG_HTTP_BIND_ADDRESS=0.0.0.0:9000
+          # - GRAYLOG_HTTP_PUBLISH_URI=http://0.0.0.0:9000
+          - GRAYLOG_HTTP_EXTERNAL_URI=https://graylog.${COMPOSE_BASE_DOMAIN}/
+          - GRAYLOG_ROOT_TIMEZONE=Asia/Nicosia
+        networks:
+          - default
+        depends_on:
+          - mongo
+          - elasticsearch
+        ports:
+          # Graylog web interface and REST API
+          - 9000:9000
+          # Syslog TCP
+          - 1514:1514
+          # Syslog UDP
+          - 1514:1514/udp
+          # GELF TCP
+          - 12201:12201
+          # GELF UDP
+          - 12201:12201/udp
+      
 networks:
   default:
     name: intergo-local-net
