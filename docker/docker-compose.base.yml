@@ -35,6 +35,7 @@ services:
       networks:
         default:
           aliases:
+            - nginx-smsto
             - nginx-smsto-api
             - nginx-msms            
             - nginx-msas
