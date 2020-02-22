@@ -57,6 +57,11 @@ services:
       container_name: msms-redis
       hostname: msms-redis
       
+    msms-callback:
+      image: redis:alpine
+      container_name: msms-callback
+      hostname: msms-callback
+      
     mockserver-redis:
       image: redis:alpine
       container_name: mockserver-redis
@@ -87,6 +92,8 @@ services:
           - REDIS_4_NAME=emailverifier-redis
           - REDIS_5_HOST=mockserver-redis
           - REDIS_5_NAME=mockserver-redis
+          - REDIS_6_HOST=msms-callback
+          - REDIS_6_NAME=msms-callback
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=Host:redis-web.${COMPOSE_BASE_DOMAIN}"
