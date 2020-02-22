@@ -36,6 +36,13 @@ All following commands will run inside `docker/` directory:
 /projects/intergo/# cd docker
 /projects/intergo/docker/# cp .env.base .env
 /projects/intergo/docker/# cp docker-compose.base.yml docker-compose.yml
+
+# For Mac
+/projects/intergo/docker/# cp docker-compose.mac.yml docker-compose.yml
+
+# Enable NFS Support for Docker on Mac for optimization
+/projects/intergo/docker/# chmod +x enable-nfs.sh
+/projects/intergo/docker/# ./enable-nfs.sh
 ```
 
 In case you use Valet, or you need different port for http, https, mysql and mongodb, you have to adjusts `.env` file using a text editor, eg.:

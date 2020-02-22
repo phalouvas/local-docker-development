@@ -1,0 +1,341 @@
+version: '3.6'
+
+services:
+  traefik:
+    image: traefik:1.7.12
+    ports:
+      - ${COMPOSE_PORT_HTTP}:80
+      - ${COMPOSE_PORT_HTTPS}:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/traefik.toml:/traefik.toml
+      - nfsmount_ssl:/ssl/
+      - nfsmount_logs:/logs
+    container_name: traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:traefik.${COMPOSE_BASE_DOMAIN}"
+      - "traefik.backend=traefik"
+      - "traefik.port=8080"
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    hostname: nginx
+    volumes:
+      - nfsmount_smsto:/code_smsto/:rw
+      - nfsmount_msas:/code_msas/:rw
+      - nfsmount_msms:/code_msms/:rw
+      - nfsmount_mock:/code_mockserver/:rw
+      - nfsmount_conf:/etc/nginx/conf.d/:ro
+    depends_on:
+      - php-fpm
+    networks:
+      default:
+        aliases:
+          - nginx-smsto
+          - nginx-smsto-api
+          - nginx-msms
+          - nginx-msas
+          - nginx-mockserver
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=HostRegexp:{catchall:.*}"
+      - "traefik.frontend.priority=1"
+      - "traefik.backend=nginx"
+      - "traefik.port=80"
+
+  smsto-redis:
+    image: redis:alpine
+    container_name: smsto-redis
+    hostname: smsto-redis
+
+  msms-redis:
+    image: redis:alpine
+    container_name: msms-redis
+    hostname: msms-redis
+
+  mockserver-redis:
+    image: redis:alpine
+    container_name: mockserver-redis
+    hostname: mockserver-redis
+
+  msas-redis:
+    image: redis:alpine
+    container_name: msas-redis
+    hostname: msas-redis
+
+  phpredisadmin:
+    container_name: phpredisadmin
+    hostname: phpredisadmin
+    image: erikdubbelboer/phpredisadmin
+    environment:
+      - REDIS_1_HOST=smsto-redis
+      - REDIS_1_NAME=smsto-redis
+      - REDIS_2_HOST=msms-redis
+      - REDIS_2_NAME=msms-redis
+      - REDIS_3_HOST=msas-redis
+      - REDIS_3_NAME=msas-redis
+      - REDIS_5_HOST=mockserver-redis
+      - REDIS_5_NAME=mockserver-redis
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:redis-web.${COMPOSE_BASE_DOMAIN}"
+      - "traefik.backend=redis-web"
+      - "traefik.port=80"
+
+  mariadb:
+    image: mariadb:10.2
+    container_name: mariadb
+    hostname: mariadb
+    volumes:
+      - nfsmount_backup:/backup
+    ports:
+      - ${COMPOSE_PORT_MYSQL}:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+
+  mongo:
+    image: mongo:3.6
+    command: --smallfiles
+    container_name: mongo
+    hostname: mongo
+    ports:
+      - ${COMPOSE_PORT_MONGO}:27017
+    #environment:
+    #  - MONGO_INITDB_ROOT_USERNAME: root
+    #  - MONGO_INITDB_ROOT_PASSWORD: example
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    hostname: mongo-express
+    depends_on:
+      - mongo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:mongo-express.${COMPOSE_BASE_DOMAIN}"
+      - "traefik.backend=mongo-express"
+      - "traefik.port=8081"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    container_name: rabbitmq
+    #ports:
+    #  # Management port
+    #  - "15672:15672"
+    #  # Service port
+    #  - "5672:5672"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:rabbitmq.${COMPOSE_BASE_DOMAIN}"
+      - "traefik.backend=rabbitmq"
+      - "traefik.port=15672"
+    #volumes:
+    #  # Database mount
+    #  - ./db_rabbitmq/:/var/lib/rabbitmq
+
+  php-fpm:
+    build:
+      context: ./include/php-fpm
+    container_name: php-fpm
+    hostname: php-fpm
+    # xdebug idekey "PHPSTORM"
+    # xdebug port 9001
+    volumes:
+      # TimeFix
+      #- /etc/localtime:/etc/localtime:ro
+      # GeoIP
+      #- ./docker_files/db_geoip/:/application/storage/app/geoip2/
+      # CRON
+      #- ./docker_files/cron/php-fpm_laravel_schedule:/etc/cron.d/cron
+      - nfsmount_smsto:/code_smsto/:rw
+      - nfsmount_msas:/code_msas/:rw
+      - nfsmount_msms:/code_msms/:rw
+      - nfsmount_mock:/code_mockserver/:rw
+
+  php-fpm-horizon:
+    build:
+      context: ./include/php-fpm-horizon
+    container_name: php-fpm-horizon
+    hostname: php-fpm-horizon
+    depends_on:
+      - rabbitmq
+    volumes:
+      - nfsmount_smsto:/code_smsto/:rw
+      - nfsmount_msms:/code_msms/:rw
+      - nfsmount_mock:/code_mockserver/:rw
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:supervisor.${COMPOSE_BASE_DOMAIN}"
+      - "traefik.backend=horizon-supervisor"
+      - "traefik.port=8001"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    hostname: phpmyadmin
+    environment:
+      #- PMA_ARBITRARY=1
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+      - PMA_HOST=mariadb
+    depends_on:
+      - mariadb
+    #      ports:
+    #        - 8080:80
+    volumes:
+      - /sessions
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:phpmyadmin.${COMPOSE_BASE_DOMAIN}"
+      - "traefik.backend=phpmyadmin"
+      - "traefik.port=80"
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:mailhog.${COMPOSE_BASE_DOMAIN}"
+      - "traefik.backend=mailhog"
+      - "traefik.port=8025"
+
+  nodejs:
+    image: node:9-alpine
+    #build:
+    #  context: ./include/vuejs-watch
+    container_name: nodejs
+    hostname: nodejs
+    working_dir: /application
+    volumes:
+      - nfsmount_smsto:/code_smsto/:rw
+      - nfsmount_msas:/code_msas/:rw
+      - nfsmount_msms:/code_msms/:rw
+    command: echo "Container ready."
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.2
+    container_name: elasticsearch
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    labels:
+      - "traefik.enable=false"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - default
+
+  graylog:
+    image: graylog/graylog:3.2
+    container_name: graylog
+    labels:
+      - "traefik.enable=true"
+      - "traefik.web.port=9000"
+      - "traefik.web.frontend.rule=Host:graylog.${COMPOSE_BASE_DOMAIN}"
+      - "traefik.web.backend.healthcheck.path=/"
+      - "traefik.web.backend.healthcheck.interval=10s"
+    environment:
+      # CHANGE ME (must be at least 16 characters)!
+      - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
+      # Password: admin
+      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      - GRAYLOG_HTTP_BIND_ADDRESS=0.0.0.0:9000
+      # - GRAYLOG_HTTP_PUBLISH_URI=http://0.0.0.0:9000
+      - GRAYLOG_HTTP_EXTERNAL_URI=https://graylog.${COMPOSE_BASE_DOMAIN}/
+      - GRAYLOG_ROOT_TIMEZONE=Asia/Nicosia
+    networks:
+      - default
+    depends_on:
+      - mongo
+      - elasticsearch
+    ports:
+      # Graylog web interface and REST API
+      - 9000:9000
+      # Syslog TCP
+      - 1514:1514
+      # Syslog UDP
+      - 1514:1514/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
+
+networks:
+  default:
+    name: intergo-local-net
+    driver: bridge
+
+volumes:
+  nfsmount_smsto:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":${DOCKER_PATH}/code_smsto/"
+  nfsmount_msms:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":${DOCKER_PATH}/code_msms/"
+  nfsmount_msas:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":${DOCKER_PATH}/code_msas/"
+  nfsmount_mock:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":${DOCKER_PATH}/code_mockserver/"
+  nfsmount_docker:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":/var/run/docker.sock"
+  nfsmount_traefik:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":${DOCKER_PATH}/docker/traefik/traefik.toml"
+  nfsmount_ssl:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":${DOCKER_PATH}/docker/traefik/ssl/"
+  nfsmount_logs:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":${DOCKER_PATH}/docker/logs/"
+  nfsmount_conf:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":${DOCKER_PATH}/docker/include/nginx_local/conf.d/"
+  nfsmount_backup:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":${DOCKER_PATH}/docker/backup/"
+  nfsmount_sessions:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: ":/sessions/"
