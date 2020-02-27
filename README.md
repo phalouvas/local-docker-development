@@ -49,6 +49,10 @@ In case you use Valet, or you need different port for http, https, mysql and mon
 
 ```bash
 /projects/intergo/docker/# vi .env
+
+# Add DOCKER_PATH to point to local docker
+
+DOCKER_PATH=/Users/user/Sites/sms/docker
 ```
 
 ### Build images
