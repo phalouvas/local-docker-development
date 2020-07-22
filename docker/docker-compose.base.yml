@@ -254,7 +254,7 @@ services:
           - default
     
     graylog:
-        image: graylog/graylog:3.2.4
+        image: graylog/graylog:3.3.1
         container_name: graylog
         labels:
             - "traefik.enable=true"
