@@ -11,7 +11,7 @@ services:
         - ./traefik/traefik.toml:/traefik.toml
         - ./traefik/ssl/:/ssl/
         - ./logs:/logs
-      container_name: ${PROJECT_NAME}_traefik
+      container_name: ${COMPOSE_PROJECT_NAME}_traefik
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=Host:traefik.${COMPOSE_BASE_DOMAIN}"
@@ -20,7 +20,7 @@ services:
 
     nginx:
       image: nginx:alpine
-      container_name: ${PROJECT_NAME}_nginx
+      container_name: ${COMPOSE_PROJECT_NAME}_nginx
       hostname: nginx
       volumes:
           - ../code_smsto/:/code_smsto/:rw
@@ -49,36 +49,36 @@ services:
 
     smsto-redis:
       image: redis:alpine
-      container_name: ${PROJECT_NAME}_smsto-redis
+      container_name: ${COMPOSE_PROJECT_NAME}_smsto-redis
       hostname: smsto-redis
       
     msms-redis:
       image: redis:alpine
-      container_name: ${PROJECT_NAME}_msms-redis
+      container_name: ${COMPOSE_PROJECT_NAME}_msms-redis
       hostname: msms-redis
       
     msms-callback:
       image: redis:alpine
-      container_name: ${PROJECT_NAME}_msms-callback
+      container_name: ${COMPOSE_PROJECT_NAME}_msms-callback
       hostname: msms-callback
       
     mockserver-redis:
       image: redis:alpine
-      container_name: ${PROJECT_NAME}_mockserver-redis
+      container_name: ${COMPOSE_PROJECT_NAME}_mockserver-redis
       hostname: mockserver-redis
       
     msas-redis:
       image: redis:alpine
-      container_name: ${PROJECT_NAME}_msas-redis
+      container_name: ${COMPOSE_PROJECT_NAME}_msas-redis
       hostname: msas-redis
       
     emailverifier-redis:
       image: redis:alpine
-      container_name: ${PROJECT_NAME}_emailverifier-redis
+      container_name: ${COMPOSE_PROJECT_NAME}_emailverifier-redis
       hostname: emailverifier-redis
     
     phpredisadmin:
-      container_name: ${PROJECT_NAME}_phpredisadmin
+      container_name: ${COMPOSE_PROJECT_NAME}_phpredisadmin
       hostname: phpredisadmin
       image: erikdubbelboer/phpredisadmin
       environment:
@@ -102,7 +102,7 @@ services:
 
     mariadb:
       image: mariadb:10.4
-      container_name: ${PROJECT_NAME}_mariadb
+      container_name: ${COMPOSE_PROJECT_NAME}_mariadb
       hostname: mariadb
       volumes:
         - ./mariadb:/var/lib/mysql:rw
@@ -114,7 +114,7 @@ services:
     mongo:
       image: mongo:3.6
       command: --smallfiles
-      container_name: ${PROJECT_NAME}_mongo
+      container_name: ${COMPOSE_PROJECT_NAME}_mongo
       hostname: mongo
       ports:
         - ${COMPOSE_PORT_MONGO}:27017
@@ -124,7 +124,7 @@ services:
 
     mongo-express:
       image: mongo-express
-      container_name: ${PROJECT_NAME}_mongo-express
+      container_name: ${COMPOSE_PROJECT_NAME}_mongo-express
       hostname: mongo-express
       depends_on:
           - mongo
@@ -137,7 +137,7 @@ services:
     rabbitmq:
       image: rabbitmq:3-management
       hostname: rabbitmq
-      container_name: ${PROJECT_NAME}_rabbitmq
+      container_name: ${COMPOSE_PROJECT_NAME}_rabbitmq
       #ports:
       #  # Management port
       #  - "15672:15672"
@@ -155,7 +155,7 @@ services:
     php-fpm:
       build:
         context: ./include/php-fpm
-      container_name: ${PROJECT_NAME}_php-fpm
+      container_name: ${COMPOSE_PROJECT_NAME}_php-fpm
       hostname: php-fpm
       # xdebug idekey "PHPSTORM"
       # xdebug port 9001
@@ -176,7 +176,7 @@ services:
     php-fpm-horizon:
       build:
         context: ./include/php-fpm-horizon
-      container_name: ${PROJECT_NAME}_php-fpm-horizon
+      container_name: ${COMPOSE_PROJECT_NAME}_php-fpm-horizon
       hostname: php-fpm-horizon
       depends_on:
           - rabbitmq
@@ -194,7 +194,7 @@ services:
 
     phpmyadmin:
       image: phpmyadmin/phpmyadmin
-      container_name: ${PROJECT_NAME}_phpmyadmin
+      container_name: ${COMPOSE_PROJECT_NAME}_phpmyadmin
       hostname: phpmyadmin
       environment:
         #- PMA_ARBITRARY=1
@@ -215,7 +215,7 @@ services:
 
     mailhog:
       image: mailhog/mailhog:latest
-      container_name: ${PROJECT_NAME}_mailhog
+      container_name: ${COMPOSE_PROJECT_NAME}_mailhog
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=Host:mailhog.${COMPOSE_BASE_DOMAIN}"
@@ -226,7 +226,7 @@ services:
       image: node:9-alpine
       #build:
       #  context: ./include/vuejs-watch
-      container_name: ${PROJECT_NAME}_nodejs
+      container_name: ${COMPOSE_PROJECT_NAME}_nodejs
       hostname: nodejs
       working_dir: /application
       volumes:
@@ -238,7 +238,7 @@ services:
     
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.2
-        container_name: ${PROJECT_NAME}_elasticsearch
+        container_name: ${COMPOSE_PROJECT_NAME}_elasticsearch
         environment:
           - http.host=0.0.0.0
           - transport.host=localhost
@@ -255,7 +255,7 @@ services:
     
     graylog:
         image: graylog/graylog:3.3.1
-        container_name: ${PROJECT_NAME}_graylog
+        container_name: ${COMPOSE_PROJECT_NAME}_graylog
         labels:
             - "traefik.enable=true"
             - "traefik.web.port=9000"
