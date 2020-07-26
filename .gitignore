@@ -28,3 +28,4 @@ docker-compose.yml
 !/code_smsto/log.log
 /nbproject/private/
 /.vscode/
+/docker/mariadb/
