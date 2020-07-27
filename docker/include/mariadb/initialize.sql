@@ -8,6 +8,11 @@ CREATE DATABASE IF NOT EXISTS msms /*\!40100 DEFAULT CHARACTER SET utf8 */;
 CREATE USER IF NOT EXISTS msms@'%' IDENTIFIED BY 'msms';
 GRANT ALL PRIVILEGES ON msms.* TO 'msms'@'%';
 
+# Create Failed Jobs DB
+CREATE DATABASE IF NOT EXISTS failed_jobs /*\!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE USER IF NOT EXISTS failed_jobs@'%' IDENTIFIED BY 'failed_jobs';
+GRANT ALL PRIVILEGES ON failed_jobs.* TO 'failed_jobs'@'%';
+
 # Create Authentication Microservice DB
 CREATE DATABASE IF NOT EXISTS msas /*\!40100 DEFAULT CHARACTER SET utf8 */;
 CREATE USER IF NOT EXISTS msas@'%' IDENTIFIED BY 'msas';
