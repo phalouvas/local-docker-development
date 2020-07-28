@@ -104,8 +104,6 @@ services:
       image: mariadb:10.4
       container_name: ${COMPOSE_PROJECT_NAME}_mariadb
       hostname: mariadb
-      volumes:
-        - ./mariadb:/var/lib/mysql:rw
       ports:
         - ${COMPOSE_PORT_MYSQL}:3306
       environment:
