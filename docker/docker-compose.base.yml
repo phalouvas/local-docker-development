@@ -101,7 +101,7 @@ services:
           - "traefik.port=80"
 
     mariadb:
-      image: mariadb:10.4
+      image: mariadb:10.5.4
       container_name: ${COMPOSE_PROJECT_NAME}_mariadb
       hostname: mariadb
       ports:
