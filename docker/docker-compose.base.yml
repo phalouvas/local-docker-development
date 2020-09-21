@@ -71,6 +71,11 @@ services:
       image: redis:alpine
       container_name: ${COMPOSE_PROJECT_NAME}_msas-redis
       hostname: msas-redis
+
+    balance-redis:
+      image: redis:alpine
+      container_name: balance-redis
+      hostname: balance-redis
       
     emailverifier-redis:
       image: redis:alpine
@@ -94,6 +99,8 @@ services:
           - REDIS_5_NAME=mockserver-redis
           - REDIS_6_HOST=msms-callback
           - REDIS_6_NAME=msms-callback
+          - REDIS_7_HOST=balance-redis
+          - REDIS_7_NAME=balance-redis
       labels:
           - "traefik.enable=true"
           - "traefik.frontend.rule=Host:redis-web.${COMPOSE_BASE_DOMAIN}"
