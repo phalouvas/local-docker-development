@@ -259,7 +259,7 @@ services:
           - default
     
     graylog:
-        image: graylog/graylog:3.3.5
+        image: graylog/graylog:3.3.7
         container_name: ${COMPOSE_PROJECT_NAME}_graylog
         labels:
             - "traefik.enable=true"
