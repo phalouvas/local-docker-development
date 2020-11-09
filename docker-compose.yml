@@ -1,0 +1,299 @@
+version: '3.6'
+
+services:
+    traefik:
+      image: traefik:1.7.12
+      ports:
+        - ${COMPOSE_PORT_HTTP}:80
+        - ${COMPOSE_PORT_HTTPS}:443
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./traefik/traefik.toml:/traefik.toml
+        - ./traefik/ssl/:/ssl/
+        - ./logs:/logs
+      container_name: ${COMPOSE_PROJECT_NAME}_traefik
+      labels:
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=Host:traefik.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=traefik"
+          - "traefik.port=8080"    
+
+    nginx:
+      image: nginx:alpine
+      container_name: ${COMPOSE_PROJECT_NAME}_nginx
+      hostname: nginx
+      volumes:
+          - ../code_smsto/:/code_smsto/:rw
+          - ../code_emailverifier/:/code_emailverifier/:rw
+          - ../code_emailvalidation/:/code_emailvalidation/:rw
+          - ../code_msas/:/code_msas/:rw
+          - ../code_msms/:/code_msms/:rw
+          - ../code_mockserver/:/code_mockserver/:rw
+          - ./include/nginx_local/conf.d/:/etc/nginx/conf.d/:ro
+      depends_on:
+          - php-fpm
+      networks:
+        default:
+          aliases:
+            - nginx-smsto
+            - nginx-smsto-api
+            - nginx-msms            
+            - nginx-msas
+            - nginx-mockserver
+      labels:
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=HostRegexp:{catchall:.*}"
+          - "traefik.frontend.priority=1"
+          - "traefik.backend=nginx"
+          - "traefik.port=80"    
+
+    smsto-redis:
+      image: redis:alpine
+      container_name: ${COMPOSE_PROJECT_NAME}_smsto-redis
+      hostname: smsto-redis
+      
+    msms-redis:
+      image: redis:alpine
+      container_name: ${COMPOSE_PROJECT_NAME}_msms-redis
+      hostname: msms-redis
+      
+    msms-callback:
+      image: redis:alpine
+      container_name: ${COMPOSE_PROJECT_NAME}_msms-callback
+      hostname: msms-callback
+      
+    mockserver-redis:
+      image: redis:alpine
+      container_name: ${COMPOSE_PROJECT_NAME}_mockserver-redis
+      hostname: mockserver-redis
+      
+    msas-redis:
+      image: redis:alpine
+      container_name: ${COMPOSE_PROJECT_NAME}_msas-redis
+      hostname: msas-redis
+
+    balance-redis:
+      image: redis:alpine
+      container_name: balance-redis
+      hostname: balance-redis
+      
+    emailverifier-redis:
+      image: redis:alpine
+      container_name: ${COMPOSE_PROJECT_NAME}_emailverifier-redis
+      hostname: emailverifier-redis
+    
+    phpredisadmin:
+      container_name: ${COMPOSE_PROJECT_NAME}_phpredisadmin
+      hostname: phpredisadmin
+      image: erikdubbelboer/phpredisadmin
+      environment:
+          - REDIS_1_HOST=smsto-redis
+          - REDIS_1_NAME=smsto-redis
+          - REDIS_2_HOST=msms-redis
+          - REDIS_2_NAME=msms-redis
+          - REDIS_3_HOST=msas-redis
+          - REDIS_3_NAME=msas-redis
+          - REDIS_4_HOST=emailverifier-redis
+          - REDIS_4_NAME=emailverifier-redis
+          - REDIS_5_HOST=mockserver-redis
+          - REDIS_5_NAME=mockserver-redis
+          - REDIS_6_HOST=msms-callback
+          - REDIS_6_NAME=msms-callback
+          - REDIS_7_HOST=balance-redis
+          - REDIS_7_NAME=balance-redis
+      labels:
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=Host:redis-web.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=redis-web"
+          - "traefik.port=80"
+
+    mariadb:
+      image: mariadb:10.5.4
+      container_name: ${COMPOSE_PROJECT_NAME}_mariadb
+      hostname: mariadb
+      ports:
+        - ${COMPOSE_PORT_MYSQL}:3306
+      environment:
+        - MYSQL_ROOT_PASSWORD=root
+
+    mongo:
+      image: mongo:3.6
+      command: --smallfiles
+      container_name: ${COMPOSE_PROJECT_NAME}_mongo
+      hostname: mongo
+      ports:
+        - ${COMPOSE_PORT_MONGO}:27017
+      #environment:
+      #  - MONGO_INITDB_ROOT_USERNAME: root
+      #  - MONGO_INITDB_ROOT_PASSWORD: example
+
+    mongo-express:
+      image: mongo-express
+      container_name: ${COMPOSE_PROJECT_NAME}_mongo-express
+      hostname: mongo-express
+      depends_on:
+          - mongo
+      labels:
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=Host:mongo-express.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=mongo-express"
+          - "traefik.port=8081"
+
+    rabbitmq:
+      image: rabbitmq:3-management
+      hostname: rabbitmq
+      container_name: ${COMPOSE_PROJECT_NAME}_rabbitmq
+      #ports:
+      #  # Management port
+      #  - "15672:15672"
+      #  # Service port
+      #  - "5672:5672"
+      labels:
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=Host:rabbitmq.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=rabbitmq"
+          - "traefik.port=15672"
+      #volumes:
+      #  # Database mount
+      #  - ./db_rabbitmq/:/var/lib/rabbitmq
+
+    php-fpm:
+      build:
+        context: ./include/php-fpm
+      container_name: ${COMPOSE_PROJECT_NAME}_php-fpm
+      hostname: php-fpm
+      # xdebug idekey "PHPSTORM"
+      # xdebug port 9001
+      volumes:
+        # TimeFix
+        #- /etc/localtime:/etc/localtime:ro
+        # GeoIP
+        #- ./docker_files/db_geoip/:/application/storage/app/geoip2/
+        # CRON
+        #- ./docker_files/cron/php-fpm_laravel_schedule:/etc/cron.d/cron
+        - ../code_smsto/:/code_smsto/:rw
+        - ../code_emailverifier/:/code_emailverifier/:rw
+        - ../code_emailvalidation/:/code_emailvalidation/:rw
+        - ../code_msas/:/code_msas/:rw
+        - ../code_msms/:/code_msms/:rw
+        - ../code_mockserver/:/code_mockserver/:rw
+
+    php-fpm-horizon:
+      build:
+        context: ./include/php-fpm-horizon
+      container_name: ${COMPOSE_PROJECT_NAME}_php-fpm-horizon
+      hostname: php-fpm-horizon
+      depends_on:
+          - rabbitmq
+      volumes:
+        - ../code_smsto/:/code_smsto/:rw
+        - ../code_msms/:/code_msms/:rw        
+        - ../code_emailverifier/:/code_emailverifier/:rw
+        - ../code_emailvalidation/:/code_emailvalidation/:rw
+        - ../code_mockserver/:/code_mockserver/:rw
+      labels:
+        - "traefik.enable=true"
+        - "traefik.frontend.rule=Host:supervisor.${COMPOSE_BASE_DOMAIN}"
+        - "traefik.backend=horizon-supervisor"
+        - "traefik.port=8001"
+
+    phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      container_name: ${COMPOSE_PROJECT_NAME}_phpmyadmin
+      hostname: phpmyadmin
+      environment:
+        #- PMA_ARBITRARY=1
+        - PMA_USER=root
+        - PMA_PASSWORD=root
+        - PMA_HOST=mariadb
+      depends_on:
+        - mariadb
+#      ports:
+#        - 8080:80
+      volumes:
+        - /sessions
+      labels:
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=Host:phpmyadmin.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=phpmyadmin"
+          - "traefik.port=80"
+
+    mailhog:
+      image: mailhog/mailhog:latest
+      container_name: ${COMPOSE_PROJECT_NAME}_mailhog
+      labels:
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=Host:mailhog.${COMPOSE_BASE_DOMAIN}"
+          - "traefik.backend=mailhog"
+          - "traefik.port=8025"
+
+    nodejs:
+      image: node:9-alpine
+      #build:
+      #  context: ./include/vuejs-watch
+      container_name: ${COMPOSE_PROJECT_NAME}_nodejs
+      hostname: nodejs
+      working_dir: /application
+      volumes:
+          - ../code_smsto/:/code_smsto/:rw
+          - ../code_emailverifier/:/code_emailverifier/:rw
+          - ../code_msas/:/code_msas/:rw
+          - ../code_msms/:/code_msms/:rw
+      command: echo "Container ready."
+    
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.11
+        container_name: ${COMPOSE_PROJECT_NAME}_elasticsearch
+        environment:
+          - http.host=0.0.0.0
+          - transport.host=localhost
+          - network.host=0.0.0.0
+          - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        labels:
+          - "traefik.enable=false"
+        ulimits:
+          memlock:
+            soft: -1
+            hard: -1
+        networks:
+          - default
+    
+    graylog:
+        image: graylog/graylog:3.3.7
+        container_name: ${COMPOSE_PROJECT_NAME}_graylog
+        labels:
+            - "traefik.enable=true"
+            - "traefik.web.port=9000"
+            - "traefik.web.frontend.rule=Host:graylog.${COMPOSE_BASE_DOMAIN}"
+            - "traefik.web.backend.healthcheck.path=/"
+            - "traefik.web.backend.healthcheck.interval=10s"
+        environment:
+          # CHANGE ME (must be at least 16 characters)!
+          - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
+          # Password: admin
+          - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+          - GRAYLOG_HTTP_BIND_ADDRESS=0.0.0.0:9000
+          # - GRAYLOG_HTTP_PUBLISH_URI=http://0.0.0.0:9000
+          - GRAYLOG_HTTP_EXTERNAL_URI=https://graylog.${COMPOSE_BASE_DOMAIN}/
+          - GRAYLOG_ROOT_TIMEZONE=Asia/Nicosia
+        networks:
+          - default
+        depends_on:
+          - mongo
+          - elasticsearch
+        ports:
+          # Graylog web interface and REST API
+          - 9000:9000
+          # Syslog TCP
+          - 1514:1514
+          # Syslog UDP
+          - 1514:1514/udp
+          # GELF TCP
+          - 12201:12201
+          # GELF UDP
+          - 12201:12201/udp
+      
+networks:
+  default:
+    name: intergo-local-net
+    driver: bridge

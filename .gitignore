@@ -1,31 +1,4 @@
-# Defined Projects
-code_smsto
-code_smsto/*
-code_emailvalidation/*
-code_emailverifier/*
-code_msms
-code_msms/*
-code_msas
-code_msas/*
-code_mockserver
-code_mockserver/*
-code_nosms
-code_nosms/*
-htdocs
-htdocs/*
-.idea
-
-# logs
-docker/logs/*
-
-# Docker files
+vendor
+vendor/*
+composer.*
 .env
-docker-compose.yml
-
-# Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
-#.rocketeer/
-/code_smsto/log.log
-!/code_smsto/log.log
-/nbproject/private/
-/.vscode/
-/docker/mariadb/
